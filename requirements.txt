@@ -1,0 +1,10 @@
+build==0.3.0
+importlib-metadata==3.7.0
+packaging==20.9
+pep517==0.9.1
+pyparsing==2.4.7
+six==1.15.0
+toml==0.10.2
+typing-extensions==3.7.4.3
+websocket-client==0.57.0
+zipp==3.4.0
