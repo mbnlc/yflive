@@ -15,16 +15,26 @@ setuptools.setup(
     description="live yahoo!finance data streamer",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    author="Max Beinlich",
+    author_email="maxbeinlich@gmail.com",
     license="Unlicense",
     url='https://github.com/maxBeinlich/yflive.git',
+    download_url='https://github.com/maxBeinlich/yflive/releases',
     project_urls={
+        "Source": "https://github.com/maxBeinlich/yflive",
         "Bug Tracker": "https://github.com/maxBeinlich/yflive/issues",
     },
     classifiers=[
+        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: The Unlicense",
         "Operating System :: OS Independent",
+        "Topic :: Internet",
+        "Topic :: Finance",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Intended Audience :: Developers",
     ],
-    packages=setuptools.find_packages(),
+    install_requires=["websocket-client"],
+    packages=setuptools.find_packages(exclude="tests"),
     python_requires=">=3.6"
 )
