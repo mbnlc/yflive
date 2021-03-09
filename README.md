@@ -34,4 +34,3 @@ Please make sure to update tests as appropriate.
 ## License
 
 **yflive** is distributed under the [Unlicense](https://unlicense.org). Review [LICENSE.txt](https://github.com/maxBeinlich/yflive/blob/master/LICENSE.txt) for further information.
-
