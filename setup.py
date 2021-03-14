@@ -12,7 +12,7 @@ with io.open(path.join(here, 'README.md'), encoding='utf-8') as f:
 setuptools.setup(
     name="yflive",
     version="0.0.1",
-    description="live yahoo!finance data streamer",
+    description="live Yahoo! Finance data streamer",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Max Beinlich",
@@ -36,5 +36,6 @@ setuptools.setup(
     ],
     install_requires=["websocket-client"],
     packages=setuptools.find_packages(exclude="tests"),
+    include_package_data=True,
     python_requires=">=3.6"
 )

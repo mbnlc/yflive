@@ -1,4 +1,4 @@
-import typing
+from typing import Any
 
 import uuid
 
@@ -11,29 +11,28 @@ class Quote:
     __fields__ = {
         "identifier": str,
         "price": float,
-        "currency": str,
+        "exchange": str,
         "asset_class": AssetClass,
         "market_state": MarketState
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, identifier=None, price=None, exchange=None, 
+                 asset_class: AssetClass=AssetClass.UNDEFINED,
+                 market_state: MarketState=MarketState.UNDEFINED):
         """"""
         self._uuid = str(uuid.uuid4())
 
-        for (field, vtype) in self.__fields__.items():
-            value = kwargs.get(field, None)
-            if value is not None and vtype is not None:
-                value = vtype(value)
-            self.__dict__[field] = value
+        self.identifier = identifier
+        self.price = price
+        self.exchange = exchange
+        self.asset_class = asset_class
+        self.market_state = market_state
 
     def __str__(self): 
-        return "{0} {1} - Price: {2} {3}, {4}".format(
-                    self.asset_class, self.identifier, self.price, 
-                    self.currency, self.market_state
+        return "{0} {1} - Price: {2}, {3} : {4}".format(
+                    self.asset_class.name, self.identifier, 
+                    self.price, self.exchange,
+                    self.market_state.name
                 )
-        
-
-        
-
         
     
