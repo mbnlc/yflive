@@ -1,5 +1,7 @@
 # yflive
 
+[![Build Status](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml)
+
 yflive is a [Yahoo! Finance](https://finance.yahoo.com) live data streamer. Originally created as an alternative to scraping prices of Yahoo! Finance, this implements a websocket client for receiving live quotes from Yahoo! Finance directly.
 
 For historic prices or other financial information, [yfinance](https://github.com/ranaroussi/yfinance) is recommended.
