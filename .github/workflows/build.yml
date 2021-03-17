@@ -1,4 +1,4 @@
-name: build yflive
+name: yflive
 
 on: [push]
 
