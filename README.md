@@ -1,4 +1,4 @@
-# yflive
+# yflive v0.1.1
 
 [![Build Status](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml)
 
