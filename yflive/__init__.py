@@ -19,5 +19,3 @@ from yflive.quote import Quote
 from yflive.streamer import QuoteStreamer
 
 __all__ = ['AssetClass', 'MarketState', 'Quote', 'QuoteStreamer']
-
-

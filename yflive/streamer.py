@@ -166,4 +166,3 @@ def _ws_close(ws):
     _logger.debug("Connection closed")
     _streamer.on_close()
     _streamer.streaming = False
-

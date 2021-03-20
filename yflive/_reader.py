@@ -29,10 +29,10 @@ class QuoteReader:
     by yahoo!finance.
     """
 
-    def __init__(self, buf: List[int], pos: int, len: int):
+    def __init__(self, buf: List[int], pos: int, length: int):
         self.buf = buf
         self.pos = pos
-        self.len = len
+        self.length = length
 
     def incr(self):
         self.pos += 1
@@ -41,23 +41,28 @@ class QuoteReader:
     def uint32(self):
         value = 4294967295
         value = (self.buf[self.pos] & 127) >> 0
-        if (self.buf[self.incr()] < 128): return value
+        if (self.buf[self.incr()] < 128): 
+            return value
 
         value = (value | (self.buf[self.pos] & 127) << 7) >> 0
-        if (self.buf[self.incr()] < 128): return value
+        if (self.buf[self.incr()] < 128): 
+            return value
 
         value = (value | (self.buf[self.pos] & 127) << 14) >> 0
-        if (self.buf[self.incr()] < 128): return value
+        if (self.buf[self.incr()] < 128): 
+            return value
 
         value = (value | (self.buf[self.pos] & 127) << 21) >> 0 
-        if (self.buf[self.incr()] < 128): return value
+        if (self.buf[self.incr()] < 128): 
+            return value
 
         value = (value | (self.buf[self.pos] &  15) << 28) >> 0 
-        if (self.buf[self.incr()] < 128): return value
+        if (self.buf[self.incr()] < 128): 
+            return value
 
         self.pos += 5
-        if ((self.pos) > self.len):
-            self.pos = self.len
+        if ((self.pos) > self.length):
+            self.pos = self.length
         return value
 
     def read_bytes(self):
@@ -75,20 +80,20 @@ class QuoteReader:
     def read_float(self):
         start = self.pos
         self.pos += 4
-        bytes = bytearray(self.buf[start:self.pos])
-        return struct.unpack('f', bytes)[0]
+        b = bytearray(self.buf[start:self.pos])
+        return struct.unpack('f', b)[0]
 
     def read_int32(self):
         return self.uint32() | 0
 
     def skip(self, length=None):
         if isinstance(length, int):
-            if self.pos + length > self.len:
+            if self.pos + length > self.length:
                 return IndexError("index out of range")
             self.pos += length
         else:
             while True:
-                if self.pos >= self.len:
+                if self.pos >= self.length:
                     return IndexError("index out of range")
                 if self.buf[self.incr()] & 128 == 0:
                     break
@@ -124,7 +129,7 @@ class QuoteReader:
 
         buffer = list(base64.b64decode(message))
         reader = QuoteReader(buffer, 0, len(buffer))
-        c = reader.len
+        c = reader.length
         new_quote = Quote()
         while reader.pos < c:
             t = reader.uint32()
