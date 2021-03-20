@@ -25,15 +25,28 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/maxBeinlich/yflive/issues",
     },
     classifiers=[
+        # How mature is this project? Common values are
+        #   3 - Alpha
+        #   4 - Beta
+        #   5 - Production/Stable
+        "Development Status :: 5 - Production/Stable",
+
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+
         "Operating System :: OS Independent",
+
+        "License :: OSI Approved :: Apache Software License",
+
+        "Intended Audience :: Developers",
         "Topic :: Office/Business :: Financial",
         "Topic :: Office/Business :: Financial :: Investment",
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Intended Audience :: Developers",
     ],
     install_requires=["websocket-client"],
     packages=setuptools.find_packages(exclude="tests"),
