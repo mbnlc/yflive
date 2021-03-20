@@ -18,7 +18,7 @@ from yflive.quote import Quote
 
 from yflive.streamer import QuoteStreamer
 
-__version__ = "0.1.2-dev0"
+__version__ = "0.1.2"
 __author__ = "Max Beinlich"
 
 __all__ = ['AssetClass', 'MarketState', 'Quote', 'QuoteStreamer']

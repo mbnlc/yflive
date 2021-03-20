@@ -1,4 +1,4 @@
-# yflive v0.1.2-dev0
+# yflive v0.1.2
 
 [![Build Status](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/maxbeinlich/yflive/badge/master)](https://www.codefactor.io/repository/github/maxbeinlich/yflive/overview/master)
