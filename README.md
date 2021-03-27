@@ -1,7 +1,7 @@
 # yflive v0.1.2
 
-[![Build Status](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/maxBeinlich/yflive/actions/workflows/build.yml)
-[![CodeFactor](https://www.codefactor.io/repository/github/maxbeinlich/yflive/badge/master)](https://www.codefactor.io/repository/github/maxbeinlich/yflive/overview/master)
+[![Build Status](https://github.com/mbnlc/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/mbnlc/yflive/actions/workflows/build.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/mbnlc/yflive/badge/master)](https://www.codefactor.io/repository/github/mbnlc/yflive/overview/master)
 
 yflive is a [Yahoo! Finance](https://finance.yahoo.com) live data streamer. Originally created as an alternative to scraping prices of Yahoo! Finance, this implements a websocket client for receiving live quotes from Yahoo! Finance directly.
 
@@ -38,4 +38,4 @@ Please make sure to update tests as appropriate.
 
 ## License
 
-**yflive** is distributed under the [Apache-2.0 License](http://www.apache.org/licenses/). Review [LICENSE.txt](https://github.com/maxBeinlich/yflive/blob/master/LICENSE.txt) for further information.
+**yflive** is distributed under the [Apache-2.0 License](http://www.apache.org/licenses/). Review [LICENSE.txt](https://github.com/mbnlc/yflive/blob/master/LICENSE.txt) for further information.

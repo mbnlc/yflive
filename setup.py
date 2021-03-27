@@ -18,11 +18,11 @@ setuptools.setup(
     author="Max Beinlich",
     author_email="maxbeinlich@gmail.com",
     license="Apache",
-    url='https://github.com/maxBeinlich/yflive.git',
-    download_url='https://github.com/maxBeinlich/yflive/releases',
+    url='https://github.com/mbnlc/yflive.git',
+    download_url='https://github.com/mbnlc/yflive/releases',
     project_urls={
-        "Source": "https://github.com/maxBeinlich/yflive",
-        "Bug Tracker": "https://github.com/maxBeinlich/yflive/issues",
+        "Source": "https://github.com/mbnlc/yflive",
+        "Bug Tracker": "https://github.com/mbnlc/yflive/issues",
     },
     classifiers=[
         # How mature is this project? Common values are
