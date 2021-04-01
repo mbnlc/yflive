@@ -16,14 +16,18 @@ from typing import Set, Callable
 
 import json
 import ssl
+import threading
+import logging
+import signal
+import sys
 
 import websocket as ws
 
-from ._utils import singleton
 from ._reader import QuoteReader
-from ._logger import _logger
 
 __all__ = ['YAHOO_FINANCE_SOCKET', 'QuoteStreamer']
+
+_logger = logging.getLogger("yflive")
 
 # ==============================================================================
 # Default callback methods
@@ -47,7 +51,6 @@ def _on_close(qs):
 
 YAHOO_FINANCE_SOCKET = "wss://streamer.finance.yahoo.com/"
 
-@singleton
 class QuoteStreamer:
     """
     The QuoteStreamer streams live quote data from yahoo!finance.
@@ -64,27 +67,51 @@ class QuoteStreamer:
     on_error = _on_error
     on_close = _on_close
 
+    instance = None
+
     def __init__(self, subscribe=[]):
         """"""
         self._subscribed = set()
         self._websocket = None
 
-        self.streaming = False
+        self._ws_thread = None
 
         self.subscribe(subscribe)
 
-    def __del__(self):
-        self._websocket.close()
-        if self.streaming:
-            self.stop()
+    def __new__(cls, **kwargs):
+        """"""
+        if not cls.instance:
+            cls.instance = super(QuoteStreamer, cls).__new__(cls, **kwargs)
+        return cls.instance
 
-    def start(self):
+    def __del__(self):
+        """"""
+        self.stop()
+
+    def start(self, should_thread=False):
         """
         Connect to the yahoo!finance websocket.
 
         Establish a connection to the yahoo!finance websocket with given
         callback methods.
         """
+        if should_thread is True:
+            self._ws_thread = threading.Thread(target=self._run)
+            self._ws_thread.daemon = True
+            self._ws_thread.start()
+        else: 
+            self._run()
+
+
+    def stop(self):
+        """Disconnect the yahoo!finance websocket."""
+        if not self.streaming: 
+            return
+        _logger.debug("Stopping QuoteStreamer...")
+        self._close()
+
+    def _run(self):
+        """"""
         try:
             self._websocket = ws.WebSocketApp(
                         YAHOO_FINANCE_SOCKET, 
@@ -98,22 +125,27 @@ class QuoteStreamer:
             if isinstance(e, SystemExit):
                 # propagate SystemExit further
                 raise
+            self.stop()
             return not isinstance(e, KeyboardInterrupt)
 
-    def stop(self):
-        """Disconnect the yahoo!finance websocket."""
-        if not self.streaming: 
-            _logger.warn("QuoteStreamer not streaming")
-            return
-        _logger.debug("Stopping QuoteStreamer...")
-        self._websocket.close()
-        self._websocket = None
-        self.streaming = False
+
+    def _close(self):
+        """"""
+        if isinstance(self._websocket, ws.WebSocketApp):
+            self._websocket.close()
+            self._websocket = None
+        if self._ws_thread:
+            self._ws_thread.join()
 
     @property
     def subscribed(self):
         """Get all currently tracked identifiers."""
         return self._subscribed
+
+    @property
+    def streaming(self):
+        """"""
+        return self._websocket is not None
 
     def subscribe(self, identifiers=[]):
         """"""
@@ -147,8 +179,8 @@ _streamer = QuoteStreamer()
 
 def _ws_open(ws):
     _logger.debug("Yahoo! Finance connection opened")
-    _streamer.streaming = True
-    _streamer.on_connect()
+    if _streamer.on_connect:
+        _streamer.on_connect()
     if len(_streamer.subscribed) > 0:
         msg = json.dumps({"subscribe": list(_streamer.subscribed)})
         ws.send(msg)
@@ -156,13 +188,16 @@ def _ws_open(ws):
 def _ws_message(ws, message):
     quote = QuoteReader.parse(message)
     _logger.info(f"Quote received: {str(quote)}")
-    _streamer.on_quote(quote)
+    if _streamer.on_quote:
+        _streamer.on_quote(quote)
     
 def _ws_error(ws, error):
     _logger.error(f"Error encountered: {error}")
-    _streamer.on_error(error)
+    if _streamer.on_error:
+        _streamer.on_error(error)
 
 def _ws_close(ws):
     _logger.debug("Connection closed")
-    _streamer.on_close()
-    _streamer.streaming = False
+    if _streamer.on_close:
+        _streamer.on_close()
+    _streamer._close()
