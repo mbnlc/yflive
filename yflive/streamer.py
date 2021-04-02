@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Set, Callable
+from typing import Set, Callable, List
 
 import json
 import ssl
@@ -69,33 +69,35 @@ class QuoteStreamer:
 
     instance = None
 
-    def __init__(self, subscribe=[]):
-        """"""
+    def __init__(self):
+        """Get QuoteStreamer singleton"""
         self._subscribed = set()
         self._websocket = None
 
         self._ws_thread = None
 
-        self.subscribe(subscribe)
-
     def __new__(cls, **kwargs):
-        """"""
         if not cls.instance:
             cls.instance = super(QuoteStreamer, cls).__new__(cls, **kwargs)
         return cls.instance
 
     def __del__(self):
-        """"""
         self.stop()
 
-    def start(self, should_thread=False):
+    def start(self, blocking=True):
         """
         Connect to the yahoo!finance websocket.
 
         Establish a connection to the yahoo!finance websocket with given
         callback methods.
+
+        Parameters:
+        -----------
+        blocking: bool 
+            True <default>
+            False -> Run on non blocking Thread
         """
-        if should_thread is True:
+        if blocking is False:
             self._ws_thread = threading.Thread(target=self._run)
             self._ws_thread.daemon = True
             self._ws_thread.start()
@@ -104,14 +106,15 @@ class QuoteStreamer:
 
 
     def stop(self):
-        """Disconnect the yahoo!finance websocket."""
+        """
+        Disconnect the Yahoo! Finance websocket.
+        """
         if not self.streaming: 
             return
         _logger.debug("Stopping QuoteStreamer...")
         self._close()
 
     def _run(self):
-        """"""
         try:
             self._websocket = ws.WebSocketApp(
                         YAHOO_FINANCE_SOCKET, 
@@ -130,7 +133,6 @@ class QuoteStreamer:
 
 
     def _close(self):
-        """"""
         if isinstance(self._websocket, ws.WebSocketApp):
             self._websocket.close()
             self._websocket = None
@@ -138,17 +140,24 @@ class QuoteStreamer:
             self._ws_thread.join()
 
     @property
-    def subscribed(self):
+    def subscribed(self) -> List:
         """Get all currently tracked identifiers."""
-        return self._subscribed
+        return list(self._subscribed)
 
     @property
-    def streaming(self):
-        """"""
+    def streaming(self) -> bool:
+        """Get current streaming state."""
         return self._websocket is not None
 
     def subscribe(self, identifiers=[]):
-        """"""
+        """
+        Subscribe to identifiers.
+        
+        Parameters:
+        -----------
+        identifiers: <type>
+            identifiers to subscribe to
+        """
         identifiers = set(identifiers) - self.subscribed
         if len(identifiers) <= 0: 
             return
@@ -160,7 +169,14 @@ class QuoteStreamer:
         return
 
     def unsubscribe(self, identifiers=[]):
-        """"""
+        """
+        Unsubscribe from identifiers.
+        
+        Parameters:
+        -----------
+        identifiers: <type>
+            identifiers to unsubscribe from
+        """
         identifiers = self.subscribed & set(identifiers)
         if len(identifiers) <= 0: 
             return

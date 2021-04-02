@@ -20,7 +20,13 @@ from yflive.asset_class import AssetClass
 from yflive.market_state import MarketState
 
 class Quote:
-    """"""
+    """
+    The Quote object is provided for handling market data in a structured way.
+
+    Quote instances are emitted in real-time as they are received from 
+    Yahoo! Finance and offer a common interface for acquiring the data 
+    provided.
+    """
 
     __fields__ = {
         "identifier": str,
@@ -31,14 +37,27 @@ class Quote:
     }
 
     def __init__(self, identifier=None, price=None, exchange=None, 
-                 asset_class: AssetClass=AssetClass.UNDEFINED,
-                 market_state: MarketState=MarketState.UNDEFINED):
-        """"""
+                 asset_class: AssetClass=AssetClass.NONE,
+                 market_state: MarketState=MarketState.NONE):
+        """
+        Parameters:
+        -----------
+        identifier: str
+            Yahoo! Finance instrument identifier
+        price: <type>
+            price of instrument
+        exchange: str
+            exchange where quote originated
+        asset_class: AssetClass
+            type of instrument/value
+        market_state: MarketState
+            trading state of underlying exchange/market
+        """
         self._uuid = str(uuid.uuid4())
 
-        self.identifier = identifier
+        self.identifier = str(identifier).upper()
         self.price = price
-        self.exchange = exchange
+        self.exchange = str(exchange).lower()
         self.asset_class = asset_class
         self.market_state = market_state
 
