@@ -16,6 +16,12 @@ from enum import Enum
 
 class PriceHint(Enum):
     """
+    The PriceHint gives a recommendation of 5 different actions.
+
+    Yahoo! Finance provides this recommendation on their webpage as a simple
+    indicator for retail investors to buy, sell or hold the stock.
+
+    The PriceHint changes rarely.
     """
 
     UNDEFINED           = 0

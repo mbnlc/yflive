@@ -18,11 +18,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build websocket-client & run tests
+      - name: Install dependencies
         run: |
           pip install -U pip setuptools wheel readme_renderer twine
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Build yflive
+        run: |
           python -c "import setuptools; print('Setup tools version'); print(setuptools.__version__)"
           python setup.py sdist
           twine check dist/*
+      - name: Run unittests
+        run: |
+          python -m unittest discover ./tests -p "test_*.py"
         env:
           TEST_WITH_INTERNET: 1

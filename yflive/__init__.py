@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# from yflive.asset_class import AssetClass
-# from yflive.market_state import MarketState
-
 from yflive.quote import Quote
 from yflive.streamer import QuoteStreamer
+
+from yflive.enums.market_state import MarketState
+from yflive.enums.option_type import OptionType
+from yflive.enums.price_hint import PriceHint
+from yflive.enums.quote_type import QuoteType
 
 __version__ = "0.1.3"
 __author__ = "Max Beinlich"
 
-__all__ = ['AssetClass', 'MarketState', 'Quote', 'QuoteStreamer']
+__all__ = ['QuoteType', 'MarketState', 'OptionType', 'PriceHint', 'Quote', 
+           'QuoteStreamer']

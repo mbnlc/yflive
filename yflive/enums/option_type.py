@@ -16,6 +16,10 @@ from enum import Enum
 
 class OptionType(Enum):
     """
+    The type of option, if quoteType is OPTION.
+
+    If a quote assumes the type OPTION, the OptionType should either be CALL or
+    PUT. The OptionType defaults to OptionType.NONE.
     """
 
     CALL    = 0

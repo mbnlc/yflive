@@ -27,20 +27,34 @@ class Quote:
     provided.
     """
 
-    __fields__ = ["identifier", "time", "quoteType", "marketState", "price", 
-                  "currency", "exchange", "changePercent", "change", 
-                  "dayVolume", "dayHigh", "dayLow", "openPrice", 
-                  "previousClose", "shortName", "expireDate", "strikePrice", 
+    # DO NOT CHANGE ORDER
+    __fields__ = ["identifier", "price", "time", "currency", "exchange", 
+                  "quoteType", "marketState", "changePercent", "dayVolume", 
+                  "dayHigh", "dayLow", "change", "shortName", 
+                  "expireDate", "openPrice", "previousClose", "strikePrice", 
                   "underlyingSymbol", "openInterest", "optionType", 
                   "miniOption", "lastSize", "bid", "bidSize", "ask", "askSize", 
                   "priceHint", "vol_24hr", "volAllCurrencies", "fromCurrency", 
                   "lastMarket", "circulatingSupply", "marketCap"]
 
     def __init__(self, **kwargs):
-        """"""
+        """
+        Initialize new Quote object.
+
+        Parameters:
+        -----------
+        identifier: <type>
+            Unique Yahoo! Finance identifier
+        time: <type>
+            Time of quote
+        quoteType: <type>
+            Type of underlying instrument
+        kwargs:
+            Additional quote information (limited by __fields__)
+        """
         self._uuid = str(uuid.uuid4())
 
-        self.identifier = kwargs["identifier"].upper()
+        self.identifier = str(kwargs["identifier"]).upper()
         self.time = kwargs["time"]
 
         self.quoteType = QuoteType(kwargs["quoteType"])
@@ -48,10 +62,7 @@ class Quote:
         for f in self.__fields__:
             setattr(self, f, kwargs.get(f, None))
 
-        if self.marketState is None:
-            # Set default value for marketState
-            self.marketState = MarketState.PRE
-
+        self.marketState = MarketState(self.marketState)
         self.quoteType = QuoteType(self.quoteType)
         self.priceHint = PriceHint(self.priceHint)
 

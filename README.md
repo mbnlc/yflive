@@ -17,6 +17,8 @@ pip install yflive
 
 ## Usage
 
+### Quick start
+
 The following example shows a simple setup, which subscribes to the tickers AAPL and TSLA and prints received quotes until interrupted.
 
 ```python
@@ -27,7 +29,8 @@ qs.subscribe(["AAPL", "TSLA"])
 
 qs.on_quote = lambda q: print(q)
 
-qs.start()
+# Non-blocking if blocking=False (default is True)
+qs.start(blocking=True)
 ```
 
 Quotes are in real time (with [exceptions](https://help.yahoo.com/kb/finance-for-web/exchanges-data-providers-yahoo-finance-sln2310.html)) and normally only available during trading hours.

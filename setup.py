@@ -48,7 +48,7 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    install_requires=["websocket-client"],
+    install_requires=["websocket-client", "protobuf"],
     packages=setuptools.find_packages(exclude="tests"),
     include_package_data=True,
     python_requires=">=3.6"

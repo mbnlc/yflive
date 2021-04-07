@@ -12,7 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .market_state import MarketState
-from .option_type import OptionType
-from .quote_type import QuoteType
-from .price_hint import PriceHint
+import unittest
+
+from yflive.streamer import QuoteStreamer
+
+class TestStreamer(unittest.TestCase):
+    """"""
+
+    def test_subscribe(self):
+        qs = QuoteStreamer()
+
+        qs.subscribe(["AAPL", "TSLA"])
+        self.assertSetEqual(qs._subscribed, set(["AAPL", "TSLA"]))
+
+        qs.unsubscribe(["AAPL"])
+        self.assertSetEqual(qs._subscribed, set(["TSLA"]))
+
+        qs.subscribe(["TSLA"])
+        self.assertSetEqual(qs._subscribed, set(["TSLA"]))
+
+
+if __name__ == '__main__':
+    unittest.main()

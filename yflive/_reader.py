@@ -24,7 +24,7 @@ class QuoteReader:
     Reader class for Yahoo! Finance websocket messages.
 
     This class implements the logic needed to decrypt websocket messages sent
-    by yahoo!finance.
+    by Yahoo! Finance.
     """
 
     def __init__(self, buf: List[int], pos: int, length: int):
@@ -95,19 +95,22 @@ class QuoteReader:
         return
 
     # ==========================================================================
-    # Parse yahoo!finance websocket msg to Quote
+    # Parse Yahoo! Finance websocket message to Quote
     # ==========================================================================
 
     @staticmethod
-    def parse(msg):
-        """"""
+    def parse(msg: str):
+        """
+        Parse Yahoo! Finance message to Quote object
+        
+        Parameters:
+        -----------
+        msg: str
+            Yahoo! Finance base64 encoded quote string
+        """
         message_bytes = base64.b64decode(msg)
         yfquote = YFQuote()
         yfquote.ParseFromString(message_bytes)
-
-        identifier = yfquote.identifier
-        time = yfquote.time
-        quoteType = yfquote.quoteType
 
         fields = {}
         for f in QuoteReader.available_fields(msg):
@@ -116,8 +119,15 @@ class QuoteReader:
         return Quote(**fields)
 
     @staticmethod
-    def available_fields(msg): 
-        """"""
+    def available_fields(msg: str): 
+        """
+        Get available fields from message
+
+        Parameters:
+        -----------
+        msg: str
+            Yahoo! Finance base64 encoded quote string
+        """
         buffer = list(base64.b64decode(msg))
         reader = QuoteReader(buffer, 0, len(buffer))
         c = reader.length
