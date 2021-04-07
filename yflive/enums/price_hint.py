@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# from yflive.asset_class import AssetClass
-# from yflive.market_state import MarketState
+from enum import Enum
 
-from yflive.quote import Quote
-from yflive.streamer import QuoteStreamer
+class PriceHint(Enum):
+    """
+    """
 
-__version__ = "0.1.3"
-__author__ = "Max Beinlich"
-
-__all__ = ['AssetClass', 'MarketState', 'Quote', 'QuoteStreamer']
+    UNDEFINED           = 0
+    STRONG_BUY          = 1
+    BUY                 = 2
+    HOLD                = 3
+    UNDER_PERFORM       = 4
+    SELL                = 5
+    NONE                = None

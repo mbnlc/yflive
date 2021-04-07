@@ -15,15 +15,13 @@
 from typing import List
 
 import base64
-import struct
 
+from yflive.yfquote_pb2 import YFQuote
 from yflive.quote import Quote
-from yflive.asset_class import AssetClass
-from yflive.market_state import MarketState
 
 class QuoteReader:
     """
-    Reader class for yahoo!finance websocket messages.
+    Reader class for Yahoo! Finance websocket messages.
 
     This class implements the logic needed to decrypt websocket messages sent
     by yahoo!finance.
@@ -65,27 +63,6 @@ class QuoteReader:
             self.pos = self.length
         return value
 
-    def read_bytes(self):
-        length = self.uint32()
-        start = self.pos
-        end = self.pos + length
-
-        self.pos += length
-        return self.buf[start:end]
-
-    def read_string(self):
-        b = self.read_bytes()
-        return "".join(map(chr, b))
-
-    def read_float(self):
-        start = self.pos
-        self.pos += 4
-        b = bytearray(self.buf[start:self.pos])
-        return struct.unpack('f', b)[0]
-
-    def read_int32(self):
-        return self.uint32() | 0
-
     def skip(self, length=None):
         if isinstance(length, int):
             if self.pos + length > self.length:
@@ -122,27 +99,31 @@ class QuoteReader:
     # ==========================================================================
 
     @staticmethod
-    def parse(message):
-        """
-        Decodes yahoo!finance websocket message using the QuoteReader class.
-        """
+    def parse(msg):
+        """"""
+        message_bytes = base64.b64decode(msg)
+        yfquote = YFQuote()
+        yfquote.ParseFromString(message_bytes)
 
-        buffer = list(base64.b64decode(message))
+        identifier = yfquote.identifier
+        time = yfquote.time
+        quoteType = yfquote.quoteType
+
+        fields = {}
+        for f in QuoteReader.available_fields(msg):
+            fields[f] = getattr(yfquote, f, None)
+
+        return Quote(**fields)
+
+    @staticmethod
+    def available_fields(msg): 
+        """"""
+        buffer = list(base64.b64decode(msg))
         reader = QuoteReader(buffer, 0, len(buffer))
         c = reader.length
-        new_quote = Quote()
+        available_fields = []
         while reader.pos < c:
             t = reader.uint32()
-            if (t >> 3) == 1:       # Read id
-                new_quote.identifier = str(reader.read_string())
-            elif (t >> 3) == 2:     # Read price
-                new_quote.price = float(reader.read_float())
-            elif (t >> 3) == 5:     # Read exchange
-                new_quote.exchange = str(reader.read_string())
-            elif (t >> 3) == 6:     # Read quoteType
-                new_quote.asset_class = AssetClass(reader.read_int32())
-            elif (t >> 3) == 7:     # Read market_hours
-                new_quote.market_state = MarketState(reader.read_int32())
-            else:                   # Value not found
-                reader.skipType(t & 7)
-        return new_quote
+            available_fields.append(Quote.__fields__[(t >> 3) - 1])
+            reader.skipType(t & 7)
+        return available_fields

@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+message YFQuote {
+
+    string identifier = 1;
+    float price = 2;
+    sint64 time = 3;
+    string currency = 4;
+    string exchange = 5;
+
+    int32 quoteType = 6;
+    int32 marketState = 7;
+
+    float changePercent = 8;
+    float change = 12;
+
+    sint64 dayVolume = 9;
+    float dayHigh = 10;
+    float dayLow = 11;
+
+    float openPrice = 15;
+    float previousClose = 16;
+
+    string shortName = 13;
+
+    sint64 expireDate = 14;
+    float strikePrice = 17;
+    string underlyingSymbol = 18;
+    sint64 openInterest = 19;
+    sint64 optionType = 20;
+    sint64 miniOption = 21;
+
+    sint64 lastSize = 22;
+    float bid = 23;
+    sint64 bidSize = 24;
+    float ask = 25;
+    sint64 askSize = 26;
+
+    sint64 priceHint = 27;
+
+    sint64 vol_24hr = 28;
+    sint64 volAllCurrencies = 29;
+    string fromCurrency = 30;
+    string lastMarket = 31;
+    double circulatingSupply = 32;
+    double marketCap = 33;
+};

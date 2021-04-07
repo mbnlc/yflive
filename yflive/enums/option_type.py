@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# from yflive.asset_class import AssetClass
-# from yflive.market_state import MarketState
+from enum import Enum
 
-from yflive.quote import Quote
-from yflive.streamer import QuoteStreamer
+class OptionType(Enum):
+    """
+    """
 
-__version__ = "0.1.3"
-__author__ = "Max Beinlich"
-
-__all__ = ['AssetClass', 'MarketState', 'Quote', 'QuoteStreamer']
+    CALL    = 0
+    PUT     = 1
+    NONE    = None

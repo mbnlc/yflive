@@ -16,8 +16,7 @@ from typing import Any
 
 import uuid
 
-from yflive.asset_class import AssetClass
-from yflive.market_state import MarketState
+from yflive.enums import *
 
 class Quote:
     """
@@ -28,44 +27,38 @@ class Quote:
     provided.
     """
 
-    __fields__ = {
-        "identifier": str,
-        "price": float,
-        "exchange": str,
-        "asset_class": AssetClass,
-        "market_state": MarketState
-    }
+    __fields__ = ["identifier", "time", "quoteType", "marketState", "price", 
+                  "currency", "exchange", "changePercent", "change", 
+                  "dayVolume", "dayHigh", "dayLow", "openPrice", 
+                  "previousClose", "shortName", "expireDate", "strikePrice", 
+                  "underlyingSymbol", "openInterest", "optionType", 
+                  "miniOption", "lastSize", "bid", "bidSize", "ask", "askSize", 
+                  "priceHint", "vol_24hr", "volAllCurrencies", "fromCurrency", 
+                  "lastMarket", "circulatingSupply", "marketCap"]
 
-    def __init__(self, identifier=None, price=None, exchange=None, 
-                 asset_class: AssetClass=AssetClass.NONE,
-                 market_state: MarketState=MarketState.NONE):
-        """
-        Parameters:
-        -----------
-        identifier: str
-            Yahoo! Finance instrument identifier
-        price: <type>
-            price of instrument
-        exchange: str
-            exchange where quote originated
-        asset_class: AssetClass
-            type of instrument/value
-        market_state: MarketState
-            trading state of underlying exchange/market
-        """
+    def __init__(self, **kwargs):
+        """"""
         self._uuid = str(uuid.uuid4())
 
-        self.identifier = str(identifier).upper()
-        self.price = price
-        self.exchange = str(exchange).lower()
-        self.asset_class = asset_class
-        self.market_state = market_state
+        self.identifier = kwargs["identifier"].upper()
+        self.time = kwargs["time"]
+
+        self.quoteType = QuoteType(kwargs["quoteType"])
+
+        for f in self.__fields__:
+            setattr(self, f, kwargs.get(f, None))
+
+        if self.marketState is None:
+            # Set default value for marketState
+            self.marketState = MarketState.PRE
+
+        self.quoteType = QuoteType(self.quoteType)
+        self.priceHint = PriceHint(self.priceHint)
 
     def __str__(self): 
         return "{0} {1} - Price: {2}, {3} : {4}".format(
-                    self.asset_class.name, self.identifier, 
+                    self.quoteType.name, self.identifier, 
                     self.price, self.exchange,
-                    self.market_state.name
+                    self.marketState.name
                 )
         
-    

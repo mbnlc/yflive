@@ -14,17 +14,17 @@
 
 from enum import Enum
 
-class AssetClass(Enum):
+class QuoteType(Enum):
     """
-    The AssetClass indicates the type of financial instrument represented by a
+    The QuoteType indicates the type of financial instrument represented by a
     quote.
 
-    Depending on the AssetClass, a Quote might contain different data,
-    thus the AssetClass is used for communicating what should be expected in 
+    Depending on the QuoteType, a Quote might contain different data,
+    thus the QuoteType is used for communicating what should be expected in 
     a Quote. 
     
     Something to watch out for, is that yahoo finance only offers delayed 
-    quotes for certain AssetClasses.
+    quotes for certain QuoteTypes.
     """
 
     UNDEFINED       = 0

@@ -18,8 +18,8 @@ import json
 import ssl
 import threading
 import logging
-import signal
-import sys
+
+import base64
 
 import websocket as ws
 
@@ -69,10 +69,12 @@ class QuoteStreamer:
 
     instance = None
 
-    def __init__(self):
+    def __init__(self, enable_trace: bool=False):
         """Get QuoteStreamer singleton"""
         self._subscribed = set()
         self._websocket = None
+
+        ws.enableTrace(enable_trace)
 
         self._ws_thread = None
 
@@ -158,10 +160,10 @@ class QuoteStreamer:
         identifiers: <type>
             identifiers to subscribe to
         """
-        identifiers = set(identifiers) - self.subscribed
+        identifiers = set(identifiers) - self._subscribed
         if len(identifiers) <= 0: 
             return
-        self._subscribed = self.subscribed | identifiers
+        self._subscribed = self._subscribed | identifiers
         _logger.debug(f"Subscribing to {list(identifiers)}")
         if self.streaming:
             msg = json.dumps({"subscribe": list(identifiers)})
@@ -177,10 +179,10 @@ class QuoteStreamer:
         identifiers: <type>
             identifiers to unsubscribe from
         """
-        identifiers = self.subscribed & set(identifiers)
+        identifiers = self._subscribed & set(identifiers)
         if len(identifiers) <= 0: 
             return
-        self._subscribed = self.subscribed - identifiers
+        self._subscribed = self._subscribed - identifiers
         _logger.debug(f"Unsubscribing from {list(identifiers)}")
         if self.streaming and len(identifiers) > 0:
             msg = json.dumps({"unsubscribe": list(identifiers)})

@@ -29,4 +29,3 @@ class MarketState(Enum):
     REGULAR     = 1
     POST        = 2
     EXTENDED    = 3
-    NONE        = None
