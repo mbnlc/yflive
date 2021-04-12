@@ -15,6 +15,7 @@
 from typing import List
 
 import json
+import sys
 import ssl
 import threading
 import logging
@@ -112,6 +113,7 @@ class QuoteStreamer:
                         on_open = _ws_open)
             self._websocket.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
         except (Exception, KeyboardInterrupt, SystemExit) as e:
+
             self.on_error(e)
             if isinstance(e, SystemExit):
                 # propagate SystemExit further
@@ -167,6 +169,13 @@ class QuoteStreamer:
             self._websocket.send(msg)
         return
 
+    def _callback(self, callback, *args):
+        if callback and callable(callback):
+            try:
+                callback(self, *args)
+            except Exception as e:
+                _logger.error("error from callback {}: {}".format(callback, e))
+
 # ==============================================================================
 # Websocket callback methods
 # ==============================================================================
@@ -175,8 +184,7 @@ _streamer = QuoteStreamer()
 
 def _ws_open(ws):
     _logger.debug("Yahoo! Finance connection opened")
-    if _streamer.on_connect:
-        _streamer.on_connect()
+    _streamer._callback(_streamer.on_connect)
     if len(_streamer.subscribed) > 0:
         msg = json.dumps({"subscribe": list(_streamer.subscribed)})
         ws.send(msg)
@@ -184,16 +192,13 @@ def _ws_open(ws):
 def _ws_message(ws, message):
     quote = QuoteReader.parse(message)
     _logger.info(f"Quote received: {str(quote)}")
-    if _streamer.on_quote:
-        _streamer.on_quote(quote)
+    _streamer._callback(_streamer.on_quote, (quote))
     
 def _ws_error(ws, error):
     _logger.error(f"Error encountered: {error}")
-    if _streamer.on_error:
-        _streamer.on_error(error)
+    _streamer._callback(_streamer.on_error, (error))
 
 def _ws_close(ws):
     _logger.debug("Connection closed")
-    if _streamer.on_close:
-        _streamer.on_close()
+    _streamer._callback(_streamer.on_close)
     _streamer.stop()

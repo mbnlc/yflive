@@ -54,14 +54,15 @@ class Quote:
         """
         self._uuid = str(uuid.uuid4())
 
-        self.identifier = str(kwargs["identifier"]).upper()
-        self.time = kwargs["time"]
-
-        self.quoteType = QuoteType(kwargs["quoteType"])
-
         for f in self.__fields__:
             setattr(self, f, kwargs.get(f))
 
+        # Mandatory
+        self.identifier = str(kwargs["identifier"]).upper()
+        self.time = kwargs["time"]
+        self.quoteType = QuoteType(kwargs["quoteType"])
+
+        # Enum redeclaration
         self.marketState = MarketState(self.marketState)
         self.optionType = OptionType(self.optionType)
 
