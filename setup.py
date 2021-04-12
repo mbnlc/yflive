@@ -11,7 +11,7 @@ with io.open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setuptools.setup(
     name="yflive",
-    version="0.1.4",
+    version="0.1.5-dev0",
     description="live Yahoo! Finance data streamer",
     long_description=long_description,
     long_description_content_type="text/markdown",
