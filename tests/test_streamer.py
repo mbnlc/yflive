@@ -23,13 +23,13 @@ class TestStreamer(unittest.TestCase):
         qs = QuoteStreamer()
 
         qs.subscribe(["AAPL", "TSLA"])
-        self.assertSetEqual(qs._subscribed, set(["AAPL", "TSLA"]))
+        self.assertSetEqual(qs._subscribed, {"AAPL", "TSLA"})
 
         qs.unsubscribe(["AAPL"])
-        self.assertSetEqual(qs._subscribed, set(["TSLA"]))
+        self.assertSetEqual(qs._subscribed, {"TSLA"})
 
         qs.subscribe(["TSLA"])
-        self.assertSetEqual(qs._subscribed, set(["TSLA"]))
+        self.assertSetEqual(qs._subscribed, {"TSLA"})
 
 
 if __name__ == '__main__':

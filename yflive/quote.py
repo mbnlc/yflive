@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any
+import typing
 
 import uuid
 
-from yflive.enums import *
+from yflive.enums import MarketState, OptionType, QuoteType
 
 class Quote:
     """
@@ -60,10 +60,10 @@ class Quote:
         self.quoteType = QuoteType(kwargs["quoteType"])
 
         for f in self.__fields__:
-            setattr(self, f, kwargs.get(f, None))
+            setattr(self, f, kwargs.get(f))
 
         self.marketState = MarketState(self.marketState)
-        self.quoteType = QuoteType(self.quoteType)
+        self.optionType = OptionType(self.optionType)
 
     def __str__(self): 
         return "{0} {1} - Price: {2}, {3} : {4}".format(

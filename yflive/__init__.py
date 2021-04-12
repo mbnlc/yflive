@@ -22,5 +22,4 @@ from yflive.enums.quote_type import QuoteType
 __version__ = "0.1.5"
 __author__ = "Max Beinlich"
 
-__all__ = ['QuoteType', 'MarketState', 'OptionType', 'Quote', 
-           'QuoteStreamer']
+__all__ = ['QuoteType', 'MarketState', 'OptionType', 'Quote', 'QuoteStreamer']

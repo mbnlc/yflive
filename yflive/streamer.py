@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Set, Callable, List
+from typing import List
 
 import json
 import ssl
@@ -26,22 +26,6 @@ from ._reader import QuoteReader
 __all__ = ['YAHOO_FINANCE_SOCKET', 'QuoteStreamer']
 
 _logger = logging.getLogger("yflive")
-
-# ==============================================================================
-# Default callback methods
-# ==============================================================================
-
-def _on_connect(qs):
-    pass
-
-def _on_quote(qs, quote):
-    pass
-
-def _on_error(qs, error):
-    pass
-
-def _on_close(qs):
-    pass
 
 # ==============================================================================
 # QuoteStreamer
@@ -60,10 +44,10 @@ class QuoteStreamer:
     subscribed to, which are then parced.
     """
 
-    on_connect = _on_connect
-    on_quote = _on_quote
-    on_error = _on_error
-    on_close = _on_close
+    on_connect = None
+    on_quote = None
+    on_error = None
+    on_close = None
 
     instance = None
 
@@ -112,7 +96,11 @@ class QuoteStreamer:
         if not self.streaming: 
             return
         _logger.debug("Stopping QuoteStreamer...")
-        self._close()
+        if isinstance(self._websocket, ws.WebSocketApp):
+            self._websocket.close()
+            self._websocket = None
+        if self._ws_thread:
+            self._ws_thread.join()
 
     def _run(self):
         try:
@@ -131,14 +119,6 @@ class QuoteStreamer:
             self.stop()
             return not isinstance(e, KeyboardInterrupt)
 
-
-    def _close(self):
-        if isinstance(self._websocket, ws.WebSocketApp):
-            self._websocket.close()
-            self._websocket = None
-        if self._ws_thread:
-            self._ws_thread.join()
-
     @property
     def subscribed(self) -> List:
         """Get all currently tracked identifiers."""
@@ -149,7 +129,7 @@ class QuoteStreamer:
         """Get current streaming state."""
         return self._websocket is not None
 
-    def subscribe(self, identifiers=[]):
+    def subscribe(self, identifiers=None):
         """
         Subscribe to identifiers.
         
@@ -158,17 +138,17 @@ class QuoteStreamer:
         identifiers: <type>
             identifiers to subscribe to
         """
-        identifiers = set(identifiers) - self._subscribed
-        if len(identifiers) <= 0: 
+        if identifiers is None and len(identifiers) <= 0:
             return
+        identifiers = set(identifiers) - self._subscribed
         self._subscribed = self._subscribed | identifiers
         _logger.debug(f"Subscribing to {list(identifiers)}")
-        if self.streaming:
+        if self.streaming and len(identifiers) > 0:
             msg = json.dumps({"subscribe": list(identifiers)})
             self._websocket.send(msg)
         return
 
-    def unsubscribe(self, identifiers=[]):
+    def unsubscribe(self, identifiers=None):
         """
         Unsubscribe from identifiers.
         
@@ -177,9 +157,9 @@ class QuoteStreamer:
         identifiers: <type>
             identifiers to unsubscribe from
         """
-        identifiers = self._subscribed & set(identifiers)
-        if len(identifiers) <= 0: 
+        if identifiers is None and len(identifiers) <= 0:
             return
+        identifiers = self._subscribed & set(identifiers)
         self._subscribed = self._subscribed - identifiers
         _logger.debug(f"Unsubscribing from {list(identifiers)}")
         if self.streaming and len(identifiers) > 0:
@@ -216,4 +196,4 @@ def _ws_close(ws):
     _logger.debug("Connection closed")
     if _streamer.on_close:
         _streamer.on_close()
-    _streamer._close()
+    _streamer.stop()

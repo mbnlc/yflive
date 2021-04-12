@@ -26,9 +26,9 @@ class TestReader(unittest.TestCase):
         msg = "CgRUU0xBFR8FKUQYoMyD1ZVeKgNOTVMwCDgBRSLND8BIpvnwDmXAo3jB2AEE"
         fields = QuoteReader.available_fields(msg)
 
-        should_contain = set(["identifier", "time", "quoteType", "marketState",
+        should_contain = {"identifier", "time", "quoteType", "marketState",
                           "priceHint", "exchange", "dayVolume", "price", 
-                          "change", "changePercent"])
+                          "change", "changePercent"}
 
         self.assertSetEqual(set(fields), should_contain)
 
