@@ -19,8 +19,6 @@ import ssl
 import threading
 import logging
 
-import base64
-
 import websocket as ws
 
 from ._reader import QuoteReader

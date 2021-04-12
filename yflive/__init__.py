@@ -17,11 +17,10 @@ from yflive.streamer import QuoteStreamer
 
 from yflive.enums.market_state import MarketState
 from yflive.enums.option_type import OptionType
-from yflive.enums.price_hint import PriceHint
 from yflive.enums.quote_type import QuoteType
 
 __version__ = "0.1.5"
 __author__ = "Max Beinlich"
 
-__all__ = ['QuoteType', 'MarketState', 'OptionType', 'PriceHint', 'Quote', 
+__all__ = ['QuoteType', 'MarketState', 'OptionType', 'Quote', 
            'QuoteStreamer']

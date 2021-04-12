@@ -14,7 +14,6 @@
 
 import unittest
 
-from yflive.quote import Quote
 from yflive._reader import QuoteReader
 
 from yflive.enums.market_state import MarketState
