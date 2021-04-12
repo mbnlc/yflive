@@ -1,7 +1,7 @@
 # yflive v0.1.5
 
 [![Build Status](https://github.com/mbnlc/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/mbnlc/yflive/actions/workflows/build.yml)
-[![CodeFactor](https://www.codefactor.io/repository/github/mbnlc/yflive/badge/master)](https://www.codefactor.io/repository/github/mbnlc/yflive/overview/master)
+[![DeepSource](https://deepsource.io/gh/mbnlc/yflive.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/mbnlc/yflive/?ref=repository-badge)
 
 yflive is a [Yahoo! Finance](https://finance.yahoo.com) live data streamer. Originally created as an alternative to scraping prices of Yahoo! Finance, yflive implements a websocket client for receiving live quotes from Yahoo! Finance directly.
 

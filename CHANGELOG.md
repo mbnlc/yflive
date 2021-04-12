@@ -1,5 +1,10 @@
 # Changelog
 
+## Release v0.1.5
+
+* Integrated Deepsource
+* Fixed parser issues
+
 ## Release v0.1.4
 
 * Reader now implements protocol buffer
@@ -10,6 +15,7 @@
 
 * Added non blocking thread for running web socket as background process. Resolves issue #1
 * Added additional docstring documentation.
+
 ## Release v0.1.2
 
 * Added bumpversion. 
