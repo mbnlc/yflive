@@ -17,7 +17,6 @@ import unittest
 from yflive.quote import Quote
 from yflive._reader import QuoteReader
 
-from yflive.enums.price_hint import PriceHint
 from yflive.enums.market_state import MarketState
 from yflive.enums.quote_type import QuoteType
 
@@ -42,7 +41,6 @@ class TestReader(unittest.TestCase):
         self.assertEqual(quote.time, 1617815434000)
         self.assertEqual(quote.quoteType, QuoteType.EQUITY)
         self.assertEqual(quote.marketState, MarketState.REGULAR)
-        self.assertEqual(quote.priceHint, PriceHint.BUY)
 
         self.assertEqual(quote.exchange, "NMS")
         self.assertEqual(quote.dayVolume, 15605331)
