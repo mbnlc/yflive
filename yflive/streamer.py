@@ -112,7 +112,7 @@ class QuoteStreamer:
                         on_open = _ws_open)
             self._websocket.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
         except (Exception, KeyboardInterrupt, SystemExit) as e:
-            _streamer._callback(_streamer.on_error, (error))
+            self._callback(self.on_error, (e))
             if isinstance(e, SystemExit):
                 # propagate SystemExit further
                 raise
