@@ -64,7 +64,6 @@ class Quote:
 
         self.marketState = MarketState(self.marketState)
         self.quoteType = QuoteType(self.quoteType)
-        self.priceHint = PriceHint(self.priceHint)
 
     def __str__(self): 
         return "{0} {1} - Price: {2}, {3} : {4}".format(
