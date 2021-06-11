@@ -54,10 +54,10 @@ class QuoteStreamer:
     def __init__(self, enable_trace: bool=False):
         """Get QuoteStreamer singleton"""
         self._subscribed = set()
-        self._websocket = None
 
         ws.enableTrace(enable_trace)
 
+        self._websocket = None
         self._ws_thread = None
 
     def __new__(cls, **kwargs):
@@ -82,8 +82,7 @@ class QuoteStreamer:
             False -> Run on non blocking Thread
         """
         if blocking is False:
-            self._ws_thread = threading.Thread(target=self._run)
-            self._ws_thread.daemon = True
+            self._ws_thread = threading.Thread(target=self._run, daemon=True)
             self._ws_thread.start()
         else: 
             self._run()
@@ -180,23 +179,23 @@ class QuoteStreamer:
 
 _streamer = QuoteStreamer()
 
-def _ws_open(ws):
+def _ws_open(socket):
     _logger.debug("Yahoo! Finance connection opened")
     _streamer._callback(_streamer.on_connect)
     if len(_streamer.subscribed) > 0:
         msg = json.dumps({"subscribe": list(_streamer.subscribed)})
-        ws.send(msg)
+        socket.send(msg)
 
-def _ws_message(ws, message):
+def _ws_message(socket, message):
     quote = QuoteReader.parse(message)
     _logger.info(f"Quote received: {str(quote)}")
     _streamer._callback(_streamer.on_quote, (quote))
     
-def _ws_error(ws, error):
+def _ws_error(socket, error):
     _logger.error(f"Error encountered: {error}")
     _streamer._callback(_streamer.on_error, (error))
 
-def _ws_close(ws):
+def _ws_close(socket):
     _logger.debug("Connection closed")
     _streamer._callback(_streamer.on_close)
     _streamer.stop()
