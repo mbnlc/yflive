@@ -7,5 +7,5 @@ pyparsing==2.4.7
 six==1.15.0
 toml==0.10.2
 typing-extensions==3.7.4.3
-websocket-client==0.57.0
+websocket-client==1.1.0
 zipp==3.4.0
