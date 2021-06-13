@@ -27,7 +27,7 @@ from yflive import QuoteStreamer
 qs = QuoteStreamer()
 qs.subscribe(["AAPL", "TSLA"]) 
 
-qs.on_quote = lambda q: print(q)
+qs.on_quote = lambda qs, q: print(q)
 
 # Non-blocking if blocking=False (default is True)
 qs.start(blocking=True)
