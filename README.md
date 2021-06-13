@@ -1,4 +1,4 @@
-# yflive v1.0.0-dev0
+# yflive v1.0.0
 
 [![Build Status](https://github.com/mbnlc/yflive/actions/workflows/build.yml/badge.svg)](https://github.com/mbnlc/yflive/actions/workflows/build.yml)
 [![DeepSource](https://deepsource.io/gh/mbnlc/yflive.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/mbnlc/yflive/?ref=repository-badge)
