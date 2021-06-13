@@ -33,19 +33,34 @@ YAHOO_FINANCE_SOCKET = "wss://streamer.finance.yahoo.com/"
 
 class QuoteStreamer:
     """
-    The QuoteStreamer streams live quote data from yahoo!finance.
+    The QuoteStreamer streams live quote data from Yahoo! Finance.
 
-    In order to receive live data we connect to the yahoo!finance websocket and
+    In order to receive live data we connect to the Yahoo! Finance websocket and
     subscribe to certain identifiers.
 
     The websocket responds with quotes of the financial instruments previously 
     subscribed to, which are then parsed.
+
+    Callbacks:
+        on_connect -> args: (quoteStreamer)
+        on_quote -> args: (quoteStreamer, quote)
+        on_error -> args: (quoteStreamer, error)
+        on_close -> args: (quoteStreamer)
     """
 
     def __init__(self, subscribe: Iterable=None, on_connect: Callable=None, 
                  on_quote: Callable=None, on_error: Callable=None, 
                  on_close: Callable=None):
-        """"""
+        """
+        Constructor method for QuoteStreamer.
+
+        Args:
+            subscribe (Iterable): identifiers to subscribe to after connecting
+            on_connect (Callable): callback method after connecting to websocket
+            on_quote (Callable): callback method for receiving a quote
+            on_error (Callable): callback method for encountering an error
+            on_close (Callable): callback method after connection closes 
+        """
 
         self.on_connect = on_connect
         self.on_quote = on_quote
@@ -64,15 +79,13 @@ class QuoteStreamer:
 
     def start(self, should_thread: bool=False):
         """
-        Connect to the yahoo!finance websocket.
+        Connect to the Yahoo! Finance websocket.
 
-        Establish a connection to the yahoo!finance websocket with given
+        Establish a connection to the Yahoo! Finance websocket with given
         callback methods.
 
-        Parameters:
-        -----------
-        should_thread: bool 
-
+        Args:
+            should_thread (bool): Should run on non blocking thread
         """
         self._websocket = ws.WebSocketApp(
             YAHOO_FINANCE_SOCKET, 
@@ -115,10 +128,8 @@ class QuoteStreamer:
         """
         Subscribe to identifiers.
         
-        Parameters:
-        -----------
-        identifiers: <type>
-            identifiers to subscribe to
+        Args:
+            identifiers (Iterable): identifiers to subscribe to
         """
         if identifiers is None and len(identifiers) <= 0:
             return
@@ -134,10 +145,8 @@ class QuoteStreamer:
         """
         Unsubscribe from identifiers.
         
-        Parameters:
-        -----------
-        identifiers: <type>
-            identifiers to unsubscribe from
+        Args:
+            identifiers (Iterable): identifiers to unsubscribe from
         """
         if identifiers is None and len(identifiers) <= 0:
             return

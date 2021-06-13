@@ -37,14 +37,15 @@ class _QuoteReader:
     # ==========================================================================
 
     @staticmethod
-    def parse(msg: str):
+    def parse(msg: str) -> Quote:
         """
-        Parse Yahoo! Finance message to Quote object
-        
-        Parameters:
-        -----------
-        msg: str
-            Yahoo! Finance base64 encoded quote string
+        Parse Yahoo! Finance websocket message to Quote object
+
+        Args:
+            msg (str): websocket message
+
+        Returns:
+            Quote: Quote object of underlying data from message
         """
         message_bytes = base64.b64decode(msg)
         yfquote = YFQuote()
@@ -57,14 +58,15 @@ class _QuoteReader:
         return Quote(**fields)
 
     @staticmethod
-    def available_fields(msg: str): 
+    def available_fields(msg: str) -> list: 
         """
         Get available fields from message
 
-        Parameters:
-        -----------
-        msg: str
-            Yahoo! Finance base64 encoded quote string
+        Args:
+            msg (str): websocket message
+
+        Returns:
+            list: List of available datapoints in message
         """
         buffer = list(base64.b64decode(msg))
         reader = _QuoteReader(buffer, 0, len(buffer))
