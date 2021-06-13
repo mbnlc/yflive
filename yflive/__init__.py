@@ -19,7 +19,7 @@ from yflive.enums.market_state import MarketState
 from yflive.enums.option_type import OptionType
 from yflive.enums.quote_type import QuoteType
 
-__version__ = "0.1.5"
+__version__ = "1.0.0-dev0"
 __author__ = "Max Beinlich"
 
 __all__ = ['QuoteType', 'MarketState', 'OptionType', 'Quote', 'QuoteStreamer']
