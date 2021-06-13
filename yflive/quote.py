@@ -63,8 +63,7 @@ class Quote:
                     return MarketState(val)
                 elif key == "optionType":
                     return OptionType(val)
-            else:
-                return val
+            return val
 
         return None
 
