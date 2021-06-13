@@ -1,5 +1,13 @@
 # Changelog
 
+## Release v1.0.0
+
+* Updated Quote object with cleaner dot-notation
+* Updated QuoteStreamer constructor for callback methods
+* Removed singleton behavior from QuoteStreamer (breaking change)
+* Migrated websocket-client to v1.1.0
+* Fixed small code issues
+
 ## Release v0.1.5
 
 * Integrated Deepsource

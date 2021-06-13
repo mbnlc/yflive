@@ -29,8 +29,8 @@ qs.subscribe(["AAPL", "TSLA"])
 
 qs.on_quote = lambda qs, q: print(q)
 
-# Non-blocking if blocking=False (default is True)
-qs.start(blocking=True)
+# Non-blocking if should_thread=True (default is False)
+qs.start(should_thread=False)
 ```
 
 Quotes are in real time (with [exceptions](https://help.yahoo.com/kb/finance-for-web/exchanges-data-providers-yahoo-finance-sln2310.html)) and normally only available during trading hours.
