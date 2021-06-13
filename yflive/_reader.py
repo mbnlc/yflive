@@ -19,7 +19,7 @@ import base64
 from yflive.yfquote_pb2 import YFQuote
 from yflive.quote import Quote
 
-class QuoteReader:
+class _QuoteReader:
     """
     Reader class for Yahoo! Finance websocket messages.
 
@@ -31,68 +31,6 @@ class QuoteReader:
         self.buf = buf
         self.pos = pos
         self.length = length
-
-    def incr(self):
-        self.pos += 1
-        return self.pos - 1
-
-    def uint32(self):
-        value = 4294967295
-        value = (self.buf[self.pos] & 127) >> 0
-        if (self.buf[self.incr()] < 128): 
-            return value
-
-        value = (value | (self.buf[self.pos] & 127) << 7) >> 0
-        if (self.buf[self.incr()] < 128): 
-            return value
-
-        value = (value | (self.buf[self.pos] & 127) << 14) >> 0
-        if (self.buf[self.incr()] < 128): 
-            return value
-
-        value = (value | (self.buf[self.pos] & 127) << 21) >> 0 
-        if (self.buf[self.incr()] < 128): 
-            return value
-
-        value = (value | (self.buf[self.pos] &  15) << 28) >> 0 
-        if (self.buf[self.incr()] < 128): 
-            return value
-
-        self.pos += 5
-        if ((self.pos) > self.length):
-            self.pos = self.length
-        return value
-
-    def skip(self, length=None):
-        if isinstance(length, int):
-            if self.pos + length > self.length:
-                return IndexError("index out of range")
-            self.pos += length
-        else:
-            while True:
-                if self.pos >= self.length:
-                    return IndexError("index out of range")
-                if self.buf[self.incr()] & 128 == 0:
-                    break
-        return
-
-    def skipType(self, wireType):
-        if wireType == 0:
-            self.skip()
-        elif wireType == 1:
-            self.skip(8)
-        elif wireType == 2:
-            self.skip(self.uint32())
-        elif wireType == 3:
-            wireType = self.uint32() & 7
-            while wireType != 4:
-                self.skipType(wireType)
-                wireType = self.uint32() & 7
-        elif wireType == 5:
-            self.skip(4)
-        else:
-            return 
-        return
 
     # ==========================================================================
     # Parse Yahoo! Finance websocket message to Quote
@@ -113,7 +51,7 @@ class QuoteReader:
         yfquote.ParseFromString(message_bytes)
 
         fields = {}
-        for f in QuoteReader.available_fields(msg):
+        for f in _QuoteReader.available_fields(msg):
             fields[f] = getattr(yfquote, f, None)
 
         return Quote(**fields)
@@ -129,11 +67,77 @@ class QuoteReader:
             Yahoo! Finance base64 encoded quote string
         """
         buffer = list(base64.b64decode(msg))
-        reader = QuoteReader(buffer, 0, len(buffer))
+        reader = _QuoteReader(buffer, 0, len(buffer))
         c = reader.length
         available_fields = []
         while reader.pos < c:
-            t = reader.uint32()
+            t = reader._uint32()
             available_fields.append(Quote.__fields__[(t >> 3) - 1])
-            reader.skipType(t & 7)
+            reader._skipType(t & 7)
         return available_fields
+
+    # ==========================================================================
+    # Helper methods
+    # ==========================================================================    
+
+    def _incr(self):
+        self.pos += 1
+        return self.pos - 1
+
+    def _uint32(self):
+        value = 4294967295
+        value = (self.buf[self.pos] & 127) >> 0
+        if (self.buf[self._incr()] < 128): 
+            return value
+
+        value = (value | (self.buf[self.pos] & 127) << 7) >> 0
+        if (self.buf[self._incr()] < 128): 
+            return value
+
+        value = (value | (self.buf[self.pos] & 127) << 14) >> 0
+        if (self.buf[self._incr()] < 128): 
+            return value
+
+        value = (value | (self.buf[self.pos] & 127) << 21) >> 0 
+        if (self.buf[self._incr()] < 128): 
+            return value
+
+        value = (value | (self.buf[self.pos] &  15) << 28) >> 0 
+        if (self.buf[self._incr()] < 128): 
+            return value
+
+        self.pos += 5
+        if ((self.pos) > self.length):
+            self.pos = self.length
+        return value
+
+    def _skip(self, length=None):
+        if isinstance(length, int):
+            if self.pos + length > self.length:
+                return IndexError("index out of range")
+            self.pos += length
+        else:
+            while True:
+                if self.pos >= self.length:
+                    return IndexError("index out of range")
+                if self.buf[self._incr()] & 128 == 0:
+                    break
+        return
+
+    def _skipType(self, wireType):
+        if wireType == 0:
+            self._skip()
+        elif wireType == 1:
+            self._skip(8)
+        elif wireType == 2:
+            self._skip(self._uint32())
+        elif wireType == 3:
+            wireType = self._uint32() & 7
+            while wireType != 4:
+                self._skipType(wireType)
+                wireType = self._uint32() & 7
+        elif wireType == 5:
+            self._skip(4)
+        else:
+            return 
+        return

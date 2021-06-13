@@ -14,7 +14,7 @@
 
 import unittest
 
-from yflive._reader import QuoteReader
+from yflive._reader import _QuoteReader
 
 from yflive.enums.market_state import MarketState
 from yflive.enums.quote_type import QuoteType
@@ -24,7 +24,7 @@ class TestReader(unittest.TestCase):
 
     def test_available_fields(self):
         msg = "CgRUU0xBFR8FKUQYoMyD1ZVeKgNOTVMwCDgBRSLND8BIpvnwDmXAo3jB2AEE"
-        fields = QuoteReader.available_fields(msg)
+        fields = _QuoteReader.available_fields(msg)
 
         should_contain = {"identifier", "time", "quoteType", "marketState",
                           "priceHint", "exchange", "dayVolume", "price", 
@@ -34,7 +34,7 @@ class TestReader(unittest.TestCase):
 
     def test_parse(self):
         msg = "CgRUU0xBFR8FKUQYoMyD1ZVeKgNOTVMwCDgBRSLND8BIpvnwDmXAo3jB2AEE"
-        quote = QuoteReader.parse(msg)
+        quote = _QuoteReader.parse(msg)
 
         self.assertEqual(quote.identifier, "TSLA")
         self.assertEqual(quote.time, 1617815434000)

@@ -21,11 +21,9 @@ import logging
 
 import websocket as ws
 
-from ._reader import QuoteReader
+from ._reader import _QuoteReader
 
 __all__ = ['YAHOO_FINANCE_SOCKET', 'QuoteStreamer']
-
-_logger = logging.getLogger("yflive")
 
 # ==============================================================================
 # QuoteStreamer
@@ -54,15 +52,17 @@ class QuoteStreamer:
         self.on_error = on_error
         self.on_close = on_close
 
-        self._subscribed = subscribe if subscribe is not None else set()
+        self._subscribed = set(subscribe) if subscribe is not None else set()
 
         self._websocket = None 
         self._ws_thread = None
 
+        self._logger = logging.getLogger("yflive")
+
     def __del__(self):
         self.stop()
 
-    def start(self, blocking=True):
+    def start(self, should_thread: bool=False):
         """
         Connect to the yahoo!finance websocket.
 
@@ -71,11 +71,17 @@ class QuoteStreamer:
 
         Parameters:
         -----------
-        blocking: bool 
-            True <default>
-            False -> Run on non blocking Thread
+        should_thread: bool 
+
         """
-        if blocking is False:
+        self._websocket = ws.WebSocketApp(
+            YAHOO_FINANCE_SOCKET, 
+            on_error = self._ws_error, 
+            on_close = self._ws_close, 
+            on_message = self._ws_message,
+            on_open = self._ws_open)
+
+        if should_thread:
             self._ws_thread = threading.Thread(target=self._run, daemon=True)
             self._ws_thread.start()
         else: 
@@ -85,8 +91,8 @@ class QuoteStreamer:
         """
         Disconnect the Yahoo! Finance websocket.
         """
-        if self.streaming: 
-            _logger.debug("Stopping QuoteStreamer...")
+        if self.is_streaming: 
+            self._logger.debug("Stopping QuoteStreamer...")
             self._websocket.close()
         if isinstance(self._websocket, ws.WebSocketApp):
             self._websocket = None
@@ -95,12 +101,6 @@ class QuoteStreamer:
 
     def _run(self):
         try:
-            self._websocket = ws.WebSocketApp(
-                        YAHOO_FINANCE_SOCKET, 
-                        on_error = self._ws_error, 
-                        on_close = self._ws_close, 
-                        on_message = self._ws_message,
-                        on_open = self._ws_open)
             self._websocket.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
         except (Exception, KeyboardInterrupt, SystemExit) as e:
             self._callback(self.on_error, e)
@@ -111,7 +111,7 @@ class QuoteStreamer:
         finally:
             self.stop()
 
-    def subscribe(self, identifiers=None):
+    def subscribe(self, identifiers: Iterable=None):
         """
         Subscribe to identifiers.
         
@@ -124,13 +124,13 @@ class QuoteStreamer:
             return
         identifiers = set(identifiers) - self._subscribed
         self._subscribed = self._subscribed | identifiers
-        _logger.debug(f"Subscribing to {list(identifiers)}")
-        if self.streaming and len(identifiers) > 0:
+        self._logger.debug(f"Subscribing to {list(identifiers)}")
+        if self.is_streaming and len(identifiers) > 0:
             msg = json.dumps({"subscribe": list(identifiers)})
             self._websocket.send(msg)
         return
 
-    def unsubscribe(self, identifiers=None):
+    def unsubscribe(self, identifiers: Iterable=None):
         """
         Unsubscribe from identifiers.
         
@@ -143,8 +143,8 @@ class QuoteStreamer:
             return
         identifiers = self._subscribed & set(identifiers)
         self._subscribed = self._subscribed - identifiers
-        _logger.debug(f"Unsubscribing from {list(identifiers)}")
-        if self.streaming and len(identifiers) > 0:
+        self._logger.debug(f"Unsubscribing from {list(identifiers)}")
+        if self.is_streaming and len(identifiers) > 0:
             msg = json.dumps({"unsubscribe": list(identifiers)})
             self._websocket.send(msg)
         return
@@ -155,7 +155,7 @@ class QuoteStreamer:
         return list(self._subscribed)
 
     @property
-    def streaming(self) -> bool:
+    def is_streaming(self) -> bool:
         """Get current streaming state."""
         if isinstance(self._websocket, ws.WebSocketApp):
             return self._websocket.keep_running
@@ -166,29 +166,29 @@ class QuoteStreamer:
             try:
                 callback(self, *args)
             except Exception as e:
-                _logger.error("error from callback {}: {}".format(callback, e))
+                self._logger.error(
+                    "error from callback {}: {}".format(callback, e))
 
     # ==========================================================================
     # Websocket callback methods
     # ==========================================================================
 
     def _ws_open(self, socket):
-        _logger.debug("Yahoo! Finance connection opened")
+        self._logger.debug("Yahoo! Finance connection opened")
         self._callback(self.on_connect)
         if len(self.subscribed) > 0:
             msg = json.dumps({"subscribe": list(self.subscribed)})
             socket.send(msg)
 
     def _ws_message(self, socket, message):
-        quote = QuoteReader.parse(message)
-        _logger.info(f"Quote received: {str(quote)}")
+        quote = _QuoteReader.parse(message)
         self._callback(self.on_quote, (quote))
         
     def _ws_error(self, socket, error):
-        _logger.error(error)
+        self._logger.error(error)
         self._callback(self.on_error, (error))
 
     def _ws_close(self, socket, status_code, reason):
-        _logger.debug("Connection closed")
+        self._logger.debug("Connection closed")
         self._callback(self.on_close)
         self.stop()

@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import typing
+from typing import Any
 
 import uuid
+import pprint
 
 from yflive.enums import MarketState, OptionType, QuoteType
 
@@ -25,6 +26,8 @@ class Quote:
     Quote instances are emitted in real-time as they are received from 
     Yahoo! Finance and offer a common interface for acquiring the data 
     provided.
+
+    Object structure adapted from alpaca-trade-api-python Entity object.
     """
 
     # DO NOT CHANGE ORDER
@@ -41,35 +44,33 @@ class Quote:
         """
         Initialize new Quote object.
 
-        Parameters:
-        -----------
-        identifier: <type>
-            Unique Yahoo! Finance identifier
-        time: <type>
-            Time of quote
-        quoteType: <type>
-            Type of underlying instrument
-        kwargs:
-            Additional quote information (limited by __fields__)
+        Provides property access to the dictionary object, based on the original
+        object stored in _raw.
         """
         self._uuid = str(uuid.uuid4())
+        self._raw = kwargs
 
-        for f in self.__fields__:
-            setattr(self, f, kwargs.get(f))
+    def __getattr__(self, key) -> Any:
+        if key not in self.__fields__:
+            raise ValueError
 
-        # Mandatory
-        self.identifier = str(kwargs["identifier"]).upper()
-        self.time = kwargs["time"]
-        self.quoteType = QuoteType(kwargs["quoteType"])
+        if key in self._raw:
+            val = self._raw[key]
+            if isinstance(val, int):
+                if key == "quoteType":
+                    return QuoteType(val)
+                elif key == "marketState":
+                    return MarketState(val)
+                elif key == "optionType":
+                    return OptionType(val)
+            else:
+                return val
 
-        # Enum redeclaration
-        self.marketState = MarketState(self.marketState)
-        self.optionType = OptionType(self.optionType)
+        return None
 
-    def __str__(self): 
-        return "{0} {1} - Price: {2}, {3} : {4}".format(
-                    self.quoteType.name, self.identifier, 
-                    self.price, self.exchange,
-                    self.marketState.name
-                )
+    def __repr__(self):
+        return '{name}({raw})'.format(
+            name=self.__class__.__name__,
+            raw=pprint.pformat(self._raw, indent=4),
+        )
         
